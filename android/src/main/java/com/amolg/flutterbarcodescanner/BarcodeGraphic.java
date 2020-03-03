@@ -51,9 +51,10 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
         final int selectedColor = COLOR_CHOICES[mCurrentColorIndex];
 
         mRectPaint = new Paint();
-        mRectPaint.setColor(selectedColor);
-        mRectPaint.setStyle(Paint.Style.STROKE);
-        mRectPaint.setStrokeWidth(4.0f);
+        mRectPaint.setColor(Color.GREEN);
+        mRectPaint.setStyle(Paint.Style.FILL);
+        mRectPaint.setStrokeWidth(2.0f);
+        mRectPaint.setStrokeMiter(5.0f);
 
         mTextPaint = new Paint();
         mTextPaint.setColor(selectedColor);

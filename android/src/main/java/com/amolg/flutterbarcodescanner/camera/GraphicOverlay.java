@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
+import java.util.concurrent.TimeUnit;
 
 public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private final Object mLock = new Object();
@@ -48,9 +48,8 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
      * Custom added values for overlay
      */
     private float left, top, endY;
-    private int rectWidth, rectHeight, frames, lineColor, lineWidth;
-    private boolean revAnimation;
-
+    private int rectWidth, rectHeight, lineColor, lineWidth;
+    private boolean changeColor;
 
     public static abstract class Graphic {
         private GraphicOverlay mOverlay;
@@ -89,14 +88,13 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     public GraphicOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        rectWidth = AppConstants.BARCODE_RECT_WIDTH;
+        rectWidth = AppConstants.BARCODE_RECT_WIDTH * 2;
         rectHeight = BarcodeCaptureActivity.SCAN_MODE == BarcodeCaptureActivity.SCAN_MODE_ENUM.QR.ordinal()
-                ? AppConstants.BARCODE_RECT_HEIGHT : (int) (AppConstants.BARCODE_RECT_HEIGHT / 1.5);
+                ? AppConstants.BARCODE_RECT_HEIGHT : (int) (AppConstants.BARCODE_RECT_HEIGHT / 3.0);
 
         lineColor = Color.parseColor(FlutterBarcodeScannerPlugin.lineColor);
 
         lineWidth = AppConstants.BARCODE_LINE_WIDTH;
-        frames = AppConstants.BARCODE_FRAMES;
     }
 
 
@@ -118,7 +116,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         left = (w - AppUtil.dpToPx(getContext(), rectWidth)) / 2;
-        top = (h - AppUtil.dpToPx(getContext(), rectHeight)) / 2;
+        top = (int)((h - AppUtil.dpToPx(getContext(), rectHeight))*1.2) / 3;
         endY = top;
         super.onSizeChanged(w, h, oldw, oldh);
     }
@@ -165,25 +163,26 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         RectF rect = new RectF(left, top, AppUtil.dpToPx(getContext(), rectWidth) + left, AppUtil.dpToPx(getContext(), rectHeight) + top);
         canvas.drawRoundRect(rect, (float) cornerRadius, (float) cornerRadius, eraser);
 
+        if(changeColor) {
+            lineColor = Color.argb(0, 0, 0, 0);
+            changeColor = false;
+        } else {
+            lineColor = Color.parseColor(FlutterBarcodeScannerPlugin.lineColor);
+            changeColor = true;
+        }
+
         // draw horizontal line
         Paint line = new Paint();
         line.setColor(lineColor);
         line.setStrokeWidth(Float.valueOf(lineWidth));
 
-        // draw the line to product animation
-        if (endY >= top + AppUtil.dpToPx(getContext(), rectHeight) + frames) {
-            revAnimation = true;
-        } else if (endY == top + frames) {
-            revAnimation = false;
+        try {
+            Thread.sleep(500);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
 
-        // check if the line has reached to bottom
-        if (revAnimation) {
-            endY -= frames;
-        } else {
-            endY += frames;
-        }
-        canvas.drawLine(left, endY, left + AppUtil.dpToPx(getContext(), rectWidth), endY, line);
+        canvas.drawLine(left, (int)(endY * 1.5), left + AppUtil.dpToPx(getContext(), rectWidth), (int)(endY * 1.5), line);
         invalidate();
     }
 }
