@@ -163,7 +163,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         RectF rect = new RectF(left, top, AppUtil.dpToPx(getContext(), rectWidth) + left, AppUtil.dpToPx(getContext(), rectHeight) + top);
         canvas.drawRoundRect(rect, (float) cornerRadius, (float) cornerRadius, eraser);
 
-        if(changeColor) {
+        if(false) {
             lineColor = Color.argb(0, 0, 0, 0);
             changeColor = false;
         } else {

@@ -9,10 +9,10 @@ enum ScanMode { QR, BARCODE, DEFAULT }
 class FlutterBarcodeScanner {
   /// Create a method channel instance
   static const MethodChannel _channel =
-      const MethodChannel('flutter_barcode_scanner');
+  const MethodChannel('flutter_barcode_scanner');
 
   static const EventChannel _eventChannel =
-      const EventChannel('flutter_barcode_scanner_receiver');
+  const EventChannel('flutter_barcode_scanner_receiver');
 
   static Stream _onBarcodeReceiver;
 
@@ -48,7 +48,7 @@ class FlutterBarcodeScanner {
 
   /// This method allows continuous barcode scanning without closing camera.
   /// It will return stream of barcode strings.
-  /// Parameters will e same as #scanBarcode
+  /// Parameters will be same as #scanBarcode
   static Stream getBarcodeStreamReceiver(String lineColor,
       String cancelButtonText, bool isShowFlashIcon, ScanMode scanMode) {
     if (null == cancelButtonText || cancelButtonText.isEmpty)
